@@ -1,0 +1,296 @@
+{
+  "name": "localvide-ai",
+  "displayName": "LocalVide AI",
+  "description": "VS Code extension to use open source local LLMs (Ollama, LM Studio, etc.) for autocompletion, chat, and refactoring",
+  "version": "0.1.0",
+  "publisher": "localvide",
+  "author": "Ismail MOUYAHADA",
+  "icon": "src/assets/android-icon-144x144.png",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Machine Learning",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "llm",
+    "ollama",
+    "local",
+    "autocomplete",
+    "chat",
+    "code-completion"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "localvide.openChat",
+        "title": "Open Chat",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "localvide.reviewFile",
+        "title": "Review: Analyze this file",
+        "icon": "$(search)"
+      },
+      {
+        "command": "localvide.reviewSelection",
+        "title": "Review: Analyze selection",
+        "icon": "$(search)"
+      },
+      {
+        "command": "localvide.refactorSelection",
+        "title": "Refactor: Refactor selection",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "localvide.optimizeSelection",
+        "title": "Optimize: Optimize performance",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "localvide.explainCode",
+        "title": "Explain this code",
+        "icon": "$(info)"
+      },
+      {
+        "command": "localvide.generateTests",
+        "title": "Generate tests",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "localvide.reloadModels",
+        "title": "Reload local models",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "localvide.selectModel",
+        "title": "Select model",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "localvide.openSettings",
+        "title": "Open settings",
+        "icon": "$(settings)"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "localvide.explainCode",
+          "when": "editorHasSelection",
+          "group": "localvide"
+        },
+        {
+          "command": "localvide.refactorSelection",
+          "when": "editorHasSelection",
+          "group": "localvide"
+        },
+        {
+          "command": "localvide.optimizeSelection",
+          "when": "editorHasSelection",
+          "group": "localvide"
+        },
+        {
+          "command": "localvide.generateTests",
+          "when": "editorHasSelection",
+          "group": "localvide"
+        },
+        {
+          "command": "localvide.reviewSelection",
+          "when": "editorHasSelection",
+          "group": "localvide"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "localvide.openChat"
+        },
+        {
+          "command": "localvide.reviewFile"
+        },
+        {
+          "command": "localvide.reviewSelection"
+        },
+        {
+          "command": "localvide.refactorSelection"
+        },
+        {
+          "command": "localvide.optimizeSelection"
+        },
+        {
+          "command": "localvide.explainCode"
+        },
+        {
+          "command": "localvide.generateTests"
+        },
+        {
+          "command": "localvide.reloadModels"
+        },
+        {
+          "command": "localvide.selectModel"
+        },
+        {
+          "command": "localvide.openSettings"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "localvide.reloadModels",
+          "when": "view == localvide.chatView",
+          "group": "navigation"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "localvide.chatView",
+          "name": "LocalVide AI Chat",
+          "when": "true"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "localvide",
+          "title": "LocalVide AI",
+          "icon": "$(sparkle)"
+        }
+      ],
+      "panel": [
+        {
+          "id": "localvide.panel",
+          "title": "LocalVide AI",
+          "icon": "$(sparkle)"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "LocalVide AI",
+      "properties": {
+        "localvide.backends": {
+          "type": "array",
+          "default": [
+            {
+              "name": "Ollama",
+              "type": "ollama",
+              "baseUrl": "http://localhost:11434",
+              "enabled": true
+            },
+            {
+              "name": "LM Studio",
+              "type": "openai-compatible",
+              "baseUrl": "http://localhost:1234",
+              "enabled": true
+            }
+          ],
+          "description": "Configuration of local model backends"
+        },
+        "localvide.model.autocomplete": {
+          "type": "string",
+          "default": "",
+          "description": "Model to use for autocompletion"
+        },
+        "localvide.model.chat": {
+          "type": "string",
+          "default": "",
+          "description": "Model to use for chat"
+        },
+        "localvide.model.review": {
+          "type": "string",
+          "default": "",
+          "description": "Model to use for review/refactoring"
+        },
+        "localvide.autocomplete.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline autocompletion"
+        },
+        "localvide.autocomplete.maxTokens": {
+          "type": "number",
+          "default": 50,
+          "description": "Maximum number of tokens for autocompletion"
+        },
+        "localvide.autocomplete.temperature": {
+          "type": "number",
+          "default": 0.2,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Temperature for autocompletion (0 = deterministic, 2 = creative)"
+        },
+        "localvide.chat.maxTokens": {
+          "type": "number",
+          "default": 2048,
+          "description": "Maximum number of tokens for chat"
+        },
+        "localvide.chat.temperature": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Temperature for chat"
+        },
+        "localvide.review.maxTokens": {
+          "type": "number",
+          "default": 4096,
+          "description": "Maximum number of tokens for review"
+        },
+        "localvide.review.temperature": {
+          "type": "number",
+          "default": 0.3,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Temperature for review"
+        },
+        "localvide.timeout": {
+          "type": "number",
+          "default": 30000,
+          "description": "Timeout in milliseconds for requests"
+        },
+        "localvide.context.maxLines": {
+          "type": "number",
+          "default": 1000,
+          "description": "Maximum number of context lines to send"
+        },
+        "localvide.autocomplete.disabledLanguages": {
+          "type": "array",
+          "default": [],
+          "description": "Languages for which to disable autocompletion"
+        },
+        "localvide.autocomplete.maxFileSize": {
+          "type": "number",
+          "default": 100000,
+          "description": "Maximum file size (in characters) to enable autocompletion"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
+
